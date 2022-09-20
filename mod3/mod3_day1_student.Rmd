@@ -20,14 +20,16 @@ Today we are going to explore data on our own applying lessons from last week.
 library(tidyverse)
 
 # load data
-load() 
+load("ncbreweries.rdata") 
 
 # use the commands from last lecture to check the dimension, set up, and variable names
 # "state the basics"
 
 
-
+head(ncbreweries)
+ncb = ncbreweries
 # check out using tidyverse
+str(ncb)
 
 ```
 
@@ -40,6 +42,7 @@ Discuss the data with your group. In the columns we see attributes that contain 
 3. Using whatever method you prefer, how would we view the different type of breweries available in the data? How many are in each type?
 
 ```{r}
+unique(ncb$type)
 
 ```
 
@@ -48,7 +51,7 @@ Discuss the data with your group. In the columns we see attributes that contain 
 
 ```{r}
 # in tidy (try in groups)
-
+beerAvgs = ncb %>% group_by(type) %>% summarise(meanBeers = mean(beercount))
 
 ```
 
@@ -56,6 +59,6 @@ Discuss the data with your group. In the columns we see attributes that contain 
 5. Next, can you make a simple graphic of this data? Read about ggplot using the help files first!
 
 ```{r}
-
+ggplot(a)
 
 ```

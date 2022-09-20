@@ -8,9 +8,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = T,
-                      results = "hide",
-                      plots = "hide")
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Learning objectives Mod 3 Lecture:
@@ -29,6 +27,7 @@ Let's load some data. The original data source is shown in the link below. There
 # packages you need for today
 library(dplyr)
 library(ggplot2)
+library(tidyverse)
 
 # data for today
 metro_nash_schools <- read.csv("metro-nash-schools.csv")
@@ -45,8 +44,9 @@ Explore this data.
 - What kind of questions might we be able to ask about this data? 
 
 ```{r}
-
-
+mns = metro_nash_schools
+str(mns)
+mns[1:3, 1:4]
 ```
 
 ### Summarize and Investigate the Data
@@ -73,7 +73,7 @@ Explore this data.
 Now, going back too our economically disadvantaged variable, what if we wanted to understand this as a proportion rather than a raw number? How can we use the above new variable to create another new variable that is called "econ_dis_prop"?
 
 ```{r}
-
+metro_nash_schools = metro_nash_schools %>% mutate(econ_dis_prop = Economically.Disadvantaged/total_pop)
 
 
 ```
@@ -99,7 +99,8 @@ Now that we have explored our data, it is time to explore it visually. Let's sta
 
 ```{r}
 metro_nash_schools<- 
-  metro_nash_schools %>%
+  metro_nash_schools %>% 
+  mutate(total_pop = Male+Female) %>%
   mutate(lim_eng_prop = Limited.English.Proficiency/ total_pop)
 ```
 
@@ -107,7 +108,8 @@ metro_nash_schools<-
 
 ```{r}
 # plot
-ggplot( , aes(x= , y= ))
+ggplot(metro_nash_schools , aes(x= econ_dis_prop, y= lim_eng_prop)) +
+         geom_point(color="blue")
 
 ```
 
@@ -117,6 +119,8 @@ Note that *aes* is used to _map_ values from the data frame columns onto axes. I
 
 ```{r}
 # plot
+ggplot(metro_nash_schools , aes(x= econ_dis_prop, y= lim_eng_prop)) +
+         geom_point(aes(size = total_pop), color="blue", alpha = .5)
 
 
 ```
@@ -142,7 +146,9 @@ Let's continue to improve this graphic to explore the relationship between limit
 4. Explore geom_point further by experimenting with the mapping the color, shape or size of the points to a third variable.
 
 ```{r}
-
+g1 <- ggplot(metro_nash_schools, aes(x=Latitude, y=lim_eng_prop)) +
+  geom_point(color="steelblue") + 
+  geom_smooth(method=lm)
 
 
 ```
@@ -150,9 +156,14 @@ Let's continue to improve this graphic to explore the relationship between limit
 5. Now finalize the graphic by changing the titles and labels where necessary. 
 
 ```{r}
+g1 <- g1 + labs(
+  title = "Reading Proficiency vs Latitude",
+  subtitle = "Left is South, Right is North",
+  y = "Limited English Proficiency",
+  x="Latitude"
+)
 
-
-
+g1
 ```
 
 There doesn't seem to be much of a relationship between these two variables. Can you explore others? Hint: think back to what we might be able to use from the first half of the analysis (which schools rank high versus low in the "economically disadvantages students" variable)?

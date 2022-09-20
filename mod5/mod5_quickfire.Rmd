@@ -7,6 +7,8 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyverse)
 ```
 
 ## Healthcare Outcomes, Perceptions, & Political Ideology
@@ -41,3 +43,37 @@ Do not fret! This is not a big percentage of your grade.
 There are also prizes. 
 
 
+```{r}
+health = read.csv("quickfire_data.csv")
+dim(health)
+lapply(health, class)
+head(health)
+```
+
+```{r}
+plot1 = ggplot(health, aes(x=percent_supporting_expansion, y=health_score)) +
+  labs(title="Health Score by State Based Upon Increased Support for Medicade",
+       subtitle = "Comparison between US Republican and Democratic Parties", x = "Percentage Support for Increasing Medicade", y = "Survey Composite Health Scores") +
+  geom_jitter(aes(col=gov_party)) +
+  scale_color_manual(values = c("Democratic Governor" = "blue", "Repubican Governor" = "red", "Independent Governor" = "green")) +
+  geom_smooth(aes(col=gov_party), method="lm", se=F)
+plot1
+```
+The above graph attempts to find a correlation between support for increasing Medicade coverage and the health levels by state and by governor party affiliation. It is apparent by the dispersion of the points across the graph that there is little correlation between the variables. That being said, from the trend line shown for the Republican Governor states, it may be inferred that as the health score of the state decreases, the support for Medicade is increased. This is likely due to the population of states with poor public health infrastructures believing that it may be in their interest to implement a federal health system. 
+
+
+```{r}
+demAvg = health %>% filter(gov_party == "Democratic Governor") %>% summarise(mean(health_score))
+demAvg = demAvg[1,1]
+
+repAvg = health %>% filter(gov_party == "Repubican Governor") %>% summarise(mean(health_score))
+repAvg = repAvg[1,1]
+
+plot2 = ggplot(health, aes(x=ideology, y=health_score)) +
+  labs(title="Health Score compared with per state Ideology and Average Health Score by Party",
+       subtitle = "Left = More Liberal, Right = More Conservative. Horizontal Lines = Average Party Health Score", x = "Ideology", y = "Survey Composite Health Scores") +
+  geom_point(aes(x=ideology, y=health_score, col=gov_party, size=abs(ideology)), show.legend = FALSE) +
+  scale_color_manual(values = c("Democratic Governor" = "blue", "Repubican Governor" = "red", "Independent Governor" = "green")) + geom_hline(yintercept=demAvg, color= "blue") + geom_hline(yintercept=repAvg, color= "red") + geom_vline(xintercept = 0)
+plot2 
+```
+The above graph analyzes how Ideology is correlated with the health score of the state. The graph shows that the more liberal a state is, the higher its health score. This can be seen by the average party health scores and that the blue states which lean conservative almost have all of the lowest health scores among blue states. 
